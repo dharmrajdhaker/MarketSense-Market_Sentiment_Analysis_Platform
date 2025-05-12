@@ -1,6 +1,6 @@
 # Market Intelligence Dashboard
 
-![Dashboard Preview](<img width="1440" alt="Screenshot 2025-05-12 at 6 02 41 PM" src="https://github.com/user-attachments/assets/b21ac11f-3f8d-4782-95bb-cff1fa222d8d" />)
+<img width="1440" alt="Screenshot 2025-05-12 at 6 02 41 PM" src="https://github.com/user-attachments/assets/b21ac11f-3f8d-4782-95bb-cff1fa222d8d" />
 
 A sophisticated market intelligence platform that collects, analyzes, and visualizes market sentiment data from Telegram channels. This tool helps investors and analysts track market trends, company-specific insights, and trading signals through an interactive dashboard.
 
