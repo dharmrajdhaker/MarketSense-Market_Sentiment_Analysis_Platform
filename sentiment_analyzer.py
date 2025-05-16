@@ -5,6 +5,7 @@ from utils.config import SENTIMENT_CATEGORIES, PROCESSED_DATA_DIR, NSE500_COMPAN
 import os
 import re
 
+
 logger = logging.getLogger(__name__)
 
 class SentimentAnalyzer:
@@ -24,36 +25,56 @@ class SentimentAnalyzer:
             raise
 
     def _extract_company_name(self, text):
-        """Extract company name from text using common patterns"""
-        # Common patterns for company names
+        """Extract company name from text, ensuring it's in NSE500_COMPANIES list"""
+        if not isinstance(text, str) or not text.strip():
+            return "Unknown"
+            
+        text_lower = text.lower()
+        
+        # First try direct matches with NSE500 companies
+        for company in NSE500_COMPANIES:
+            company_lower = company.lower()
+            # Use word boundaries to ensure we match complete words only
+            pattern = r'(?<![a-zA-Z])' + re.escape(company_lower) + r'(?![a-zA-Z])'
+            if re.search(pattern, text_lower):
+                logger.debug(f"Found direct match for NSE500 company: {company}")
+                return company
+            
+            # Check for company name with common suffixes, ensuring word boundaries
+            suffix_pattern = r'(?<![a-zA-Z])' + re.escape(company_lower) + r'(?:\s+(?:limited|ltd|corporation|corp|inc|llc|pvt|private|public|company|co\.))?(?![a-zA-Z])'
+            if re.search(suffix_pattern, text_lower):
+                logger.debug(f"Found direct match with suffix for NSE500 company: {company}")
+                return company
+        
+        # If no direct match, try to find company names using patterns
         patterns = [
-            # Standard company formats
-            r'([A-Z][a-zA-Z\s]+(?:Limited|Ltd|Corporation|Corp|Inc|LLC|Pvt|Private|Public|Company|Co\.))',
-            r'([A-Z][a-zA-Z\s]+(?:Bank|Financial|Insurance|Capital|Securities|Investments))',
-            r'([A-Z][a-zA-Z\s]+(?:Energy|Power|Electric|Infrastructure|Realty|Properties))',
-            r'([A-Z][a-zA-Z\s]+(?:Pharma|Healthcare|Biotech|Medical|Life Sciences))',
-            r'([A-Z][a-zA-Z\s]+(?:Tech|Technology|Software|Digital|Solutions|Systems))',
+            # Standard company formats with word boundaries
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+(?:Limited|Ltd|Corporation|Corp|Inc|LLC|Pvt|Private|Public|Company|Co\.))(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+(?:Bank|Financial|Insurance|Capital|Securities|Investments))(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+(?:Energy|Power|Electric|Infrastructure|Realty|Properties))(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+(?:Pharma|Healthcare|Biotech|Medical|Life Sciences))(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+(?:Tech|Technology|Software|Digital|Solutions|Systems))(?![a-zA-Z])',
             
-            # IPO specific patterns
-            r'IPO\s+of\s+([A-Z][a-zA-Z\s]+(?:Limited|Ltd|Corporation|Corp|Inc|LLC|Pvt|Private|Public|Company|Co\.))',
-            r'([A-Z][a-zA-Z\s]+)\s+IPO',
-            r'([A-Z][a-zA-Z\s]+)\s+to\s+launch\s+IPO',
-            r'([A-Z][a-zA-Z\s]+)\s+files\s+for\s+IPO',
+            # IPO specific patterns with word boundaries
+            r'(?<![a-zA-Z])IPO\s+of\s+([A-Z][a-zA-Z\s]+(?:Limited|Ltd|Corporation|Corp|Inc|LLC|Pvt|Private|Public|Company|Co\.))(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+IPO(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+to\s+launch\s+IPO(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+files\s+for\s+IPO(?![a-zA-Z])',
             
-            # News specific patterns
-            r'([A-Z][a-zA-Z\s]+)\s+reports',
-            r'([A-Z][a-zA-Z\s]+)\s+announces',
-            r'([A-Z][a-zA-Z\s]+)\s+declares',
-            r'([A-Z][a-zA-Z\s]+)\s+Q[1-4]',
+            # News specific patterns with word boundaries
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+reports(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+announces(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+declares(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+Q[1-4](?![a-zA-Z])',
             
-            # Common company name patterns
-            r'([A-Z][a-zA-Z\s]+)\s+Group',
-            r'([A-Z][a-zA-Z\s]+)\s+Holdings',
-            r'([A-Z][a-zA-Z\s]+)\s+Industries',
-            r'([A-Z][a-zA-Z\s]+)\s+Enterprises'
+            # Common company name patterns with word boundaries
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+Group(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+Holdings(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+Industries(?![a-zA-Z])',
+            r'(?<![a-zA-Z])([A-Z][a-zA-Z\s]+)\s+Enterprises(?![a-zA-Z])'
         ]
         
-        # First try to find company names using patterns
+        # Try to find company names using patterns and validate against NSE500
         for pattern in patterns:
             matches = re.findall(pattern, text)
             if matches:
@@ -61,14 +82,19 @@ class SentimentAnalyzer:
                 # Clean up the company name
                 company = re.sub(r'\s+', ' ', company)  # Remove extra spaces
                 company = company.strip()
+                
                 if len(company) > 2:  # Ensure it's not too short
-                    return company
+                    # Validate against NSE500 companies with word boundaries
+                    company_lower = company.lower()
+                    for nse_company in NSE500_COMPANIES:
+                        nse_company_lower = nse_company.lower()
+                        # Use word boundaries for validation
+                        pattern = r'(?<![a-zA-Z])' + re.escape(company_lower) + r'(?![a-zA-Z])'
+                        if re.search(pattern, nse_company_lower):
+                            logger.debug(f"Found pattern match for NSE500 company: {nse_company}")
+                            return nse_company
         
-        # If no pattern matches, try to find company names from NSE500 list
-        for company in NSE500_COMPANIES:
-            if company.lower() in text.lower():
-                return company
-        
+        logger.debug("No NSE500 company match found")
         return "Unknown"
 
     def _generate_signal(self, sentiment, confidence):
