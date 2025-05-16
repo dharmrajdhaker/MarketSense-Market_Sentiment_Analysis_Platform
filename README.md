@@ -1,6 +1,6 @@
 # Market Intelligence Dashboard
-
-<img width="1440" alt="Screenshot 2025-05-12 at 6 02 41 PM" src="https://github.com/user-attachments/assets/b21ac11f-3f8d-4782-95bb-cff1fa222d8d" />
+<img width="1440" alt="Screenshot 2025-05-16 at 6 44 48 PM" src="https://github.com/user-attachments/assets/b9d44f24-2011-4055-8412-95600d723e65" />
+<img width="1440" alt="Screenshot 2025-05-16 at 6 49 12 PM" src="https://github.com/user-attachments/assets/50f32590-a9a7-4780-a56b-2b7b1dd37d0c" />
 
 A sophisticated market intelligence platform that collects, analyzes, and visualizes market sentiment data from Telegram channels. This tool helps investors and analysts track market trends, company-specific insights, and trading signals through an interactive dashboard.
 
@@ -179,5 +179,9 @@ For any queries or support, please reach out to:
 ---
 
 Made with ❤️ by Dharmraj Dhaker
+<img width="1440" alt="Screenshot 2025-05-16 at 6 48 58 PM" src="https://github.com/user-attachments/assets/b3af7af3-c18e-4395-9e67-31eda9e6a11c" />
+<img width="1438" alt="Screenshot 2025-05-16 at 6 47 38 PM" src="https://github.com/user-attachments/assets/680a7a62-bbe7-4c17-aecc-4b005281c1f9" />
+<img width="1438" alt="Screenshot 2025-05-16 at 6 48 23 PM" src="https://github.com/user-attachments/assets/49b4b332-bcdb-4269-97b8-cd6c12d41d0d" />
+
 
 *Note: This is a professional tool for market analysis. Always verify signals and do your own research before making investment decisions.* 
